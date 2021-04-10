@@ -4,6 +4,8 @@ import com.artcoffer.library.dao.BookRepository;
 import com.artcoffer.library.model.BookEntity;
 import com.artcoffer.library.model.Result;
 import com.artcoffer.library.model.dto.Book;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @Autowired
     private final BookRepository bookRepository;
@@ -36,6 +40,7 @@ public class BookService {
         var bookEntityOpt = bookRepository.findById(bookId);
 
         if(bookEntityOpt.isEmpty()) {
+            logger.warn("Book not found for ID {} attempting to retrieve", bookId);
             return new Result<>(true, Result.ErrorType.NOT_FOUND, String.format("Book not found for Id %s", bookId));
         }
 
@@ -56,6 +61,7 @@ public class BookService {
 
             return new Result<>(new Book(savedBook.getId(), savedBook.getTitle(), savedBook.getDescription(), savedBook.getPageCount(),savedBook.getCategory()));
         } catch (Exception e) {
+            logger.error("Unexpected error creating a book", e);
             return new Result<>(true, Result.ErrorType.UNKNOWN_ERROR, e.getMessage());
         }
     }
@@ -71,6 +77,7 @@ public class BookService {
             var bookEntityOpt = bookRepository.findById(bookId);
 
             if (bookEntityOpt.isEmpty()) {
+                logger.warn("Book not found for ID {} attempting to update", bookId);
                 return new Result<>(true, Result.ErrorType.NOT_FOUND, String.format("Book not found for Id %s", bookId));
             }
 
@@ -83,6 +90,7 @@ public class BookService {
 
             return new Result<>(new Book(savedBook.getId(), savedBook.getTitle(), savedBook.getDescription(), savedBook.getPageCount(),savedBook.getCategory()));
         } catch (Exception e) {
+            logger.error("Unexpected error updating a book", e);
             return new Result<>(true, Result.ErrorType.UNKNOWN_ERROR, e.getMessage());
         }
     }
@@ -96,12 +104,14 @@ public class BookService {
         var book = bookRepository.findById(bookId);
 
         if(book.isEmpty()) {
+            logger.warn("Book not found for ID {} attempting to delete", bookId);
             return new Result<>(true, Result.ErrorType.NOT_FOUND, String.format("Book not found for Id %s", bookId));
         }
 
         try {
             book.ifPresent(bookRepository::delete);
         }catch(Exception e) {
+            logger.error("Unexpected error deleting a book", e);
             return new Result<>(true, Result.ErrorType.UNKNOWN_ERROR, e.getMessage());
         }
 
