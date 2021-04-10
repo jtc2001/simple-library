@@ -2,6 +2,16 @@
 
 A simple library where you can add/remove/update and list all books
 
+### Prerequisites
+
+Java 11
+
+Apache Maven
+
+### Run
+
+./mvnw spring-boot:run
+
 ### Usage
 
 Swagger Documentation
