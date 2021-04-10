@@ -30,6 +30,20 @@ public class BookService {
     }
 
     /**
+     * @return Result<List<Book>> representing all books in the library or error
+     */
+    public Result<Book> getById(Long bookId) {
+        var bookEntityOpt = bookRepository.findById(bookId);
+
+        if(bookEntityOpt.isEmpty()) {
+            return new Result<>(true, Result.ErrorType.NOT_FOUND, String.format("Book not found for Id %s", bookId));
+        }
+
+        var bookEntity = bookEntityOpt.get();
+        return new Result<>(new Book(bookEntity.getId(), bookEntity.getTitle(), bookEntity.getDescription(), bookEntity.getPageCount(), bookEntity.getCategory()));
+    }
+
+    /**
      * Adds a new book to the library
      * @param book to add
      * @return Result<Book> representing the created book or error

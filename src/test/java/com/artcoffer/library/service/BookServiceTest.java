@@ -51,6 +51,19 @@ public class BookServiceTest {
     }
 
     @Test
+    public void testGetById() {
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(bookEntity));
+        var result = bookService.getById(1L);
+        assertEquals(result.getEntity(),
+                new Book(
+                        bookEntity.getId(),
+                        bookEntity.getTitle(),
+                        bookEntity.getDescription(),
+                        bookEntity.getPageCount(),
+                        bookEntity.getCategory()));
+    }
+
+    @Test
     public void testCreate() {
         when(bookRepository.save(any())).thenReturn(bookEntity);
         var result = bookService.create(book);

@@ -21,6 +21,11 @@ public class BookController {
         this.resultResponseResolver = resultResponseResolver;
     }
 
+    @GetMapping("/books/{id}")
+    public ResponseEntity<Book> getById(@PathVariable Long id) {
+        return resultResponseResolver.resolve(bookService.getById(id));
+    }
+
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAll() {
         return resultResponseResolver.resolve(bookService.getAll());

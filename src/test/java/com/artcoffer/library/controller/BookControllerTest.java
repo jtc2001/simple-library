@@ -46,6 +46,15 @@ public class BookControllerTest {
     }
 
     @Test
+    public void testGetById(){
+        when(resultResponseResolver.resolve(any())).thenReturn(ResponseEntity.ok(book));
+        when(bookService.getById(1L)).thenReturn(new Result<>(book));
+        var result = bookController.getById(1L);
+        assertEquals(ResponseEntity.ok(book), result);
+        verify(resultResponseResolver).resolve(any());
+    }
+
+    @Test
     public void testGetAllWhenNoBooksReturnsEmptyList(){
         when(resultResponseResolver.resolve(any())).thenReturn(ResponseEntity.ok(List.of()));
         when(bookService.getAll()).thenReturn(new Result<>(List.of()));

@@ -4,6 +4,10 @@ A simple library where you can add/remove/update and list all books
 
 ### Usage
 
+Retrieve a single book
+
+```GET /book/{id}```
+
 Retrieve a list of all books
 
 ```GET /books```
