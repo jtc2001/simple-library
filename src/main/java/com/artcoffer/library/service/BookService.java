@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.artcoffer.library.service.BookMapper.mapFromEntity;
+
 @Service
 public class BookService {
 
@@ -29,8 +31,7 @@ public class BookService {
      */
     public Result<List<Book>> getAll() {
         List<BookEntity> bookEntities = (List<BookEntity>) bookRepository.findAll();
-        return new Result<>(bookEntities.stream().map(b -> new Book(b.getId(), b.getTitle(), b.getDescription(), b.getPageCount(), b.getCategory()))
-                .collect(Collectors.toList()));
+        return new Result<>(bookEntities.stream().map(BookMapper::mapFromEntity).collect(Collectors.toList()));
     }
 
     /**
@@ -45,7 +46,7 @@ public class BookService {
         }
 
         var bookEntity = bookEntityOpt.get();
-        return new Result<>(new Book(bookEntity.getId(), bookEntity.getTitle(), bookEntity.getDescription(), bookEntity.getPageCount(), bookEntity.getCategory()));
+        return new Result<>(mapFromEntity(bookEntity));
     }
 
     /**
@@ -55,11 +56,10 @@ public class BookService {
      */
     public Result<Book> create(Book book) {
         try {
-            BookEntity bookEntity
-                    = new BookEntity(book.getId(), book.getTitle(), book.getDescription(), book.getPageCount(), book.getCategory());
+            BookEntity bookEntity = new BookEntity(book.getId(), book.getTitle(), book.getDescription(), book.getPageCount(), book.getCategory());
             var savedBook = bookRepository.save(bookEntity);
 
-            return new Result<>(new Book(savedBook.getId(), savedBook.getTitle(), savedBook.getDescription(), savedBook.getPageCount(),savedBook.getCategory()));
+            return new Result<>(mapFromEntity(savedBook));
         } catch (Exception e) {
             logger.error("Unexpected error creating a book", e);
             return new Result<>(true, Result.ErrorType.UNKNOWN_ERROR, e.getMessage());
@@ -88,7 +88,7 @@ public class BookService {
             bookEntity.setPageCount(book.getPageCount());
             var savedBook = bookRepository.save(bookEntity);
 
-            return new Result<>(new Book(savedBook.getId(), savedBook.getTitle(), savedBook.getDescription(), savedBook.getPageCount(),savedBook.getCategory()));
+            return new Result<>(mapFromEntity(savedBook));
         } catch (Exception e) {
             logger.error("Unexpected error updating a book", e);
             return new Result<>(true, Result.ErrorType.UNKNOWN_ERROR, e.getMessage());
